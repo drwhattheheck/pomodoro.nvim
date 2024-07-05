@@ -2,6 +2,9 @@ vim.g.pomodoro_time_work = 25
 vim.g.pomodoro_time_break_short = 5
 vim.g.pomodoro_time_break_long = 20
 vim.g.pomodoro_timers_to_long_break = 4
+vim.g.pomodoro_stopped_icon = ' (inactive)' -- nf-fa-stop | f04d
+vim.g.pomodoro_started_icon = ' ' -- nf-md-timer_sand_complete | f199f 
+vim.g.pomodoro_break_icon = ' ' -- nf-fa-coffee | f0f4
 
 local pomodoro_state = 'stopped'
 local pomodoro_work_started_at = 0
@@ -57,14 +60,14 @@ function Pomodoro.start()
 end
 
 function Pomodoro.statusline()
-    if pomodoro_state == 'stopped' then
-        return 'ﮫ (inactive)'
-    elseif pomodoro_state == 'started' then
-        return '羽' .. pomodoro_time_remaining(vim.g.pomodoro_time_work, pomodoro_work_started_at)
-    else
-        local break_minutes = pomodoro_time_break()
-        return 'ﲊ ' .. pomodoro_time_remaining(break_minutes, pomodoro_break_started_at)
-    end
+  if pomodoro_state == 'stopped' then
+      return vim.g.pomodoro_stopped_icon
+  elseif pomodoro_state == 'started' then
+      return vim.g.pomodoro_started_icon .. pomodoro_time_remaining(vim.g.pomodoro_time_work, pomodoro_work_started_at)
+  else
+      local break_minutes = pomodoro_time_break()
+      return vim.g.pomodoro_break_icon .. pomodoro_time_remaining(break_minutes, pomodoro_break_started_at)
+  end
 end
 
 function Pomodoro.status()
@@ -98,6 +101,18 @@ function Pomodoro.setup(tbl)
 
     if tbl.timers_to_long_break then
         vim.g.pomodoro_timers_to_long_break = tbl.timers_to_long_break
+    end
+
+    if tbl.stopped_icon then
+      vim.g.pomodoro_stopped_icon = tbl.stopped_icon
+    end
+
+    if tbl.started_icon then
+      vim.g.pomodoro_started_icon = tbl.started_icon
+    end
+
+    if tbl.break_icon then
+      vim.g.pomodoro_break_icon = tbl.break_icon
     end
 end
 
